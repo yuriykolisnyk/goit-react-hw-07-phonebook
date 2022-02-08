@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import * as phonebookActions from '../../redux/actions';
+import * as phonebookOperations from '../../redux/operations';
 import { getContacts } from '../../redux/selectors';
 import toast, { Toaster } from 'react-hot-toast';
 import { Form, Label, Input, Button } from './ContactForm.styled';
@@ -8,7 +8,7 @@ import { Form, Label, Input, Button } from './ContactForm.styled';
 export default function ContactForm() {
   const contacts = useSelector(getContacts);
   const dispatch = useDispatch();
-  const onSubmit = (name, number) => dispatch(phonebookActions.addContact(name, number));
+  const onSubmit = (name, number) => dispatch(phonebookOperations.addContact(name, number));
 
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
