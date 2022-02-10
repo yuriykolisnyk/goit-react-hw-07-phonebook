@@ -1,16 +1,26 @@
-import { useSelector, useDispatch } from 'react-redux';
-import * as phonebookOperations from '../../redux/operations';
-import { getVisibleContacts } from '../../redux/selectors';
-
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { useFetchContactsQuery, useDeleteContactsMutation } from '../../contactsSlice';
 import { Item, Name, Number, Button } from './ContactList.styled';
 
 export default function ContactList() {
-  const contacts = useSelector(getVisibleContacts);
-  const dispatch = useDispatch();
-  const onDeleteContact = id => dispatch(phonebookOperations.deleteContact(id));
+  const { data: contacts } = useFetchContactsQuery();
+  const [onDeleteContact] = useDeleteContactsMutation();
+
+  const contactsFilter = useSelector(state => {
+    const { filter } = state.contacts;
+    const normalizedFilter = filter.toLowerCase();
+    let filteredContacts = [];
+    if (contacts) {
+      filteredContacts = contacts.filter(item =>
+        item.name.toLowerCase().includes(normalizedFilter),
+      );
+    }
+    return filteredContacts;
+  });
   return (
     <ul>
-      {contacts.map(({ id, name, number }) => (
+      {contactsFilter.map(({ id, name, number }) => (
         <Item key={id}>
           <Name>{name}: </Name>
           <Number href={`tel:${number}`}>{number}</Number>

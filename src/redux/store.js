@@ -1,21 +1,12 @@
-import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
-import logger from 'redux-logger';
-import { FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
+import { configureStore } from '@reduxjs/toolkit';
 import phonebookReducer from './reducer';
-
-const middleware = [
-  ...getDefaultMiddleware({
-    serializableCheck: {
-      ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-    },
-  }),
-  logger,
-];
+import { contactsApi } from '../contactsSlice';
 
 export const store = configureStore({
   reducer: {
     contacts: phonebookReducer,
+    [contactsApi.reducerPath]: contactsApi.reducer,
   },
-  middleware,
   devTools: process.env.NODE_ENV === 'development',
+  middleware: getDefaultMiddleware => [...getDefaultMiddleware(), contactsApi.middleware],
 });

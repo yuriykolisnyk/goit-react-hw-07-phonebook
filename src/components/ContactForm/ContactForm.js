@@ -1,33 +1,14 @@
 import { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import * as phonebookOperations from '../../redux/operations';
-import { getContacts } from '../../redux/selectors';
+import { useCreateContactsMutation, useFetchContactsQuery } from '../../contactsSlice';
 import toast, { Toaster } from 'react-hot-toast';
 import { Form, Label, Input, Button } from './ContactForm.styled';
 
 export default function ContactForm() {
-  const contacts = useSelector(getContacts);
-  const dispatch = useDispatch();
-  const onSubmit = (name, number) => dispatch(phonebookOperations.addContact(name, number));
-
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
 
-  const contactMatching = () => {
-    const namesInPhonebook = contacts.reduce((acc, contact) => [...acc, contact.name], []);
-
-    const numbersInPhonebook = contacts.reduce((acc, contact) => [...acc, contact.number], []);
-
-    if (namesInPhonebook.includes(name) || numbersInPhonebook.includes(number)) {
-      toast.error(`${name}${number} is already on contacts`);
-      return true;
-    }
-
-    if (name === '' || number === '') {
-      toast.error('Please enter all data');
-      return true;
-    }
-  };
+  const [createContact] = useCreateContactsMutation();
+  const { data: contacts } = useFetchContactsQuery();
 
   const handleChange = e => {
     const { name, value } = e.target;
@@ -46,14 +27,17 @@ export default function ContactForm() {
 
   const handleSubmit = e => {
     e.preventDefault();
-    setName('');
-    setNumber('');
 
-    if (contactMatching()) {
+    if (contacts.find(contact => contact.name === name)) {
+      toast.error(`${name}${number} is already on contacts`);
+      setName('');
+      setNumber('');
       return;
     }
 
-    onSubmit(name, number);
+    createContact(name, number);
+    setName('');
+    setNumber('');
   };
 
   return (
