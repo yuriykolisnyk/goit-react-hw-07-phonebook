@@ -10,10 +10,9 @@ import Filter from './components/Filter';
 
 export default function App() {
   // const contacts = useSelector(getVisibleContacts);
+  const dispatch = useDispatch();
 
   const loader = useSelector(getLoader);
-
-  const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(phonebookOperations.fetchContacts());
