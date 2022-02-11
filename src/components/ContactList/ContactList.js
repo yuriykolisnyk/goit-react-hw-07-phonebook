@@ -1,34 +1,36 @@
-import React from 'react';
 import { useSelector } from 'react-redux';
-import { useFetchContactsQuery, useDeleteContactsMutation } from '../../contactsSlice';
+import { useFetchContactsQuery, useDeleteContactsMutation } from '../../redux/slice';
+import { getFilter } from '../../redux/selectors';
 import { Item, Name, Number, Button } from './ContactList.styled';
 
-export default function ContactList() {
+const ContactsList = () => {
   const { data: contacts } = useFetchContactsQuery();
   const [onDeleteContact] = useDeleteContactsMutation();
 
-  const contactsFilter = useSelector(state => {
-    const { filter } = state.contacts;
-    const normalizedFilter = filter.toLowerCase();
-    let filteredContacts = [];
-    if (contacts) {
-      filteredContacts = contacts.filter(item =>
-        item.name.toLowerCase().includes(normalizedFilter),
-      );
-    }
-    return filteredContacts;
-  });
+  const filter = useSelector(getFilter);
+
+  const getFilteredContacts = contacts =>
+    contacts.filter(contact => contact.name.toLowerCase().includes(filter.toLowerCase()));
+
+  const contactFilterList = contacts ? getFilteredContacts(contacts) : null;
+
   return (
-    <ul>
-      {contactsFilter.map(({ id, name, number }) => (
-        <Item key={id}>
-          <Name>{name}: </Name>
-          <Number href={`tel:${number}`}>{number}</Number>
-          <Button type="button" onClick={() => onDeleteContact(id)}>
-            Delete
-          </Button>
-        </Item>
-      ))}
-    </ul>
+    <>
+      {contacts && (
+        <ul>
+          {contactFilterList.map(({ id, name, number }) => (
+            <Item key={id}>
+              <Name>{name}: </Name>
+              <Number href={`tel:${number}`}>{number}</Number>
+              <Button type="button" onClick={() => onDeleteContact(id)}>
+                Delete
+              </Button>
+            </Item>
+          ))}
+        </ul>
+      )}
+    </>
   );
-}
+};
+
+export default ContactsList;
