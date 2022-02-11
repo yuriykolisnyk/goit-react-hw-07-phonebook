@@ -10,9 +10,11 @@ const ContactsList = () => {
   const filter = useSelector(getFilter);
 
   const getFilteredContacts = contacts =>
-    contacts.filter(contact => contact.name.toLowerCase().includes(filter.toLowerCase()));
+    contacts?.filter(contact => contact.name.toLowerCase().includes(filter.toLowerCase()));
 
-  const contactFilterList = contacts ? getFilteredContacts(contacts) : null;
+  const contactFilterList = getFilteredContacts(contacts);
+
+  // const contactFilterList = contacts ? getFilteredContacts(contacts) : null;
 
   return (
     <>
